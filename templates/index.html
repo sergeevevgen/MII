@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div class="central">
+        <form action='http://127.0.0.1:5000/resultdata' method=get>
+            <h2>Столбцы</h2>
+            <input type=text size=20 name=columns>
+            <h2>Строки</h2>
+            <input type=text size=20 name=rows>
+            <br>
+            <input type=submit value='Enter'>
+        </form>
+    </div>
+    <div class="central">
+        <form action='http://127.0.0.1:5000/filters' method=get>
+            <p>
+                <select name="select" size="3">
+                <option selected value="город">по городам</option>
+                <option value="штат">по штатам</option>
+                <option value="продолжительность">по длительности</option>
+                <option value="опубликовано">по разнице публикации</option>
+               </select>
+               <input type="submit" value="Отправить">
+           </p>
+        </form>
+    </div>
+</body>
+</html>
