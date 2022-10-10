@@ -6,32 +6,8 @@
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-    <div class="heading">
-        <h1>{{title2}}</h1>
+    <div>
+        <h1>{{title_info}}</h1>
     </div>
-    <table>
-           <tr>
-              {% for col in ne %}
-              <th>{{col}}</th>
-              {% endfor %}
-           </tr>
-           <tr>
-              {% for col in info %}
-              <th>{{col}}</th>
-              {% endfor %}
-           </tr>
-           <tr>
-              {% for col in column_names %}
-              <th>{{col}}</th>
-              {% endfor %}
-           </tr>
-           {% for row in row_data %}
-           <tr>
-               {% for col, row_ in zip(column_names, row) %}
-               <td>{{row_}}</td>
-               {% endfor %}
-           </tr>
-           {% endfor %}
-        </table>
 </body>
 </html>

@@ -7,26 +7,42 @@
 </head>
 <body>
     <div class="central">
-        <form action='http://127.0.0.1:5000/resultdata' method=get>
+        <form action='{{link}}/get_data' method=get>
             <h2>Столбцы</h2>
             <input type=text size=20 name=columns>
             <h2>Строки</h2>
             <input type=text size=20 name=rows>
             <br>
-            <input type=submit value='Enter'>
+            <button type=submit>Ввести!</button>
         </form>
     </div>
-    <div class="central">
-        <form action='http://127.0.0.1:5000/filters' method=get>
-            <p>
-                <select name="select" size="3">
-                <option selected value="город">по городам</option>
-                <option value="штат">по штатам</option>
-                <option value="продолжительность">по длительности</option>
-                <option value="опубликовано">по разнице публикации</option>
-               </select>
-               <input type="submit" value="Отправить">
-           </p>
+     <div class="central">
+        <form action='{{link}}/filters' method=get>
+            <fieldset>
+                <legend>Выберите атрибут фильтрации:</legend>
+                    <h4>Строки</h4>
+                    <input type=text size=20 name=rows>
+                    <div class="radio_div">
+                        <input type="radio" id="contactChoice1"
+                        name="filter" value="city" checked>
+                        <label for="contactChoice1">По городам</label>
+
+                        <input type="radio" id="contactChoice2"
+                        name="filter" value="state">
+                        <label for="contactChoice2">По штатам</label>
+
+                        <input type="radio" id="contactChoice3"
+                        name="filter" value="duration">
+                        <label for="contactChoice3">По длительности</label>
+
+                        <input type="radio" id="contactChoice4"
+                        name="filter" value="difference">
+                        <label for="contactChoice3">По разнице публикации</label>
+                    </div>
+                    <div>
+                      <button type="submit">Выбрать!</button>
+                    </div>
+              </fieldset>
         </form>
     </div>
 </body>
