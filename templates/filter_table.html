@@ -9,5 +9,14 @@
     <div>
         <h1>{{title_info}}</h1>
     </div>
+    <table>
+        {% for row in df_data %}
+            <tr>
+                {% for col, row_ in zip(df_names, row) %}
+                    <td>{{row_}}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>

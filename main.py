@@ -1,7 +1,9 @@
 import pandas as pd
 from flask import Flask, redirect, url_for, request, render_template
+from random import randint
+import numpy as np
 
-df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
+df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
@@ -37,12 +39,18 @@ def filters():
     str_end = int(data['rows'].split(',')[1]) + 1
     new_df = df.loc[str_start: str_end]
     return filtration(data['filter'], new_df)
-    # return render_template("filter_table.html", df_data=new_df.index, df_names=data['filter'],
+    # return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
     #                        title_info=about_filtration + data['filter'], zip=zip)
 
 
 def filtration(filter_arg, new_df):
-    return new_df.groupby('shape').count()[[filter_arg]].to_html()
+    duration = new_df.groupby(filter_arg).min()[['duration']]
+    duration.rename(columns={'duration': 'min'}, inplace=True)
+    max_duration = new_df.groupby(filter_arg).max()[['duration']]
+    mean_duration = new_df.groupby(filter_arg).mean()[['duration']]
+    duration['max'] = max_duration['duration']
+    duration['average'] = mean_duration['duration']
+    return duration.to_html()
 
 
 if __name__ == "__main__":
