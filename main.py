@@ -3,7 +3,7 @@ from flask import Flask, redirect, url_for, request, render_template
 from random import randint
 import numpy as np
 
-df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
+df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
@@ -38,19 +38,41 @@ def filters():
     str_start = int(data['rows'].split(',')[0]) - 1
     str_end = int(data['rows'].split(',')[1]) + 1
     new_df = df.loc[str_start: str_end]
-    return filtration(data['filter'], new_df)
-    # return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
-    #                        title_info=about_filtration + data['filter'], zip=zip)
+    new_df = filtration(data['filter'], new_df)
+
+    return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
+                           title_info=about_filtration + data['filter'], zip=zip)
 
 
+# Function for grouping data
 def filtration(filter_arg, new_df):
-    duration = new_df.groupby(filter_arg).min()[['duration']]
+    if filter_arg == 'duration':
+        min_duration = new_df[filter_arg].min()
+        max_duration = new_df[filter_arg].max()
+        mean_duration = new_df[filter_arg].mean()
+        data = {'': ['min', 'max', 'mean'], filter_arg: [min_duration, max_duration, mean_duration]}
+        return pd.DataFrame(data)
+
+    if filter_arg == 'difference':
+        new_df['posted'] = pd.to_datetime(new_df['posted'], format='%Y/%m/%dT%H:%M:%S').copy()
+        new_df['date_time'] = pd.to_datetime(new_df['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
+        new_df[filter_arg] = new_df['posted'] - new_df['date_time']
+
+        min_duration = new_df[filter_arg].min()
+        max_duration = new_df[filter_arg].max()
+        mean_duration = new_df[filter_arg].mean()
+        data = {'': ['min', 'max', 'mean'], filter_arg: [min_duration, max_duration, mean_duration]}
+        return pd.DataFrame(data)
+
+    duration = new_df.groupby(filter_arg)[['duration']].min()
     duration.rename(columns={'duration': 'min'}, inplace=True)
-    max_duration = new_df.groupby(filter_arg).max()[['duration']]
-    mean_duration = new_df.groupby(filter_arg).mean()[['duration']]
+    max_duration = new_df.groupby(filter_arg)[['duration']].max()
+    mean_duration = new_df.groupby(filter_arg)[['duration']].mean()
     duration['max'] = max_duration['duration']
     duration['average'] = mean_duration['duration']
-    return duration.to_html()
+    # new_df[data['filter']] = new_df.axes[0].values
+    duration[filter_arg] = duration.axes[0].values
+    return duration
 
 
 if __name__ == "__main__":

@@ -10,10 +10,15 @@
         <h1>{{title_info}}</h1>
     </div>
     <table>
+        <tr>
+            {% for col in df_names %}
+                <th>{{col}}</th>
+            {% endfor %}
+        </tr>
         {% for row in df_data %}
             <tr>
-                {% for col, row_ in zip(df_names, row) %}
-                    <td>{{row_}}</td>
+                {% for row_cell in row %}
+                    <td>{{row_cell}}</td>
                 {% endfor %}
             </tr>
         {% endfor %}

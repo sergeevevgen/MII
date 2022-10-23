@@ -25,6 +25,7 @@ tr:nth-child(even) {
     align-items: flex-start;
     margin-bottom: 5px;
 }
+
 .heading {
     border: 2px solid black;
     text-align: center;
