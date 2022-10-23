@@ -2,6 +2,8 @@ import pandas as pd
 from flask import Flask, redirect, url_for, request, render_template
 from random import randint
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 app = Flask(__name__)
@@ -39,9 +41,34 @@ def filters():
     str_end = int(data['rows'].split(',')[1]) + 1
     new_df = df.loc[str_start: str_end]
     new_df = filtration(data['filter'], new_df)
-
     return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
-                           title_info=about_filtration + data['filter'], zip=zip)
+                           title_info=about_filtration + data['filter'], zip=zip, title=data['filter'].capitalize())
+
+
+@app.route("/visualize", methods=['GET'])
+def visualize():
+    return render_template("visualize.html", link=link, title="Визуализация")
+
+
+@app.route("/visualization", methods=['GET'])
+def visualization():
+    data = request.args
+    c = int(data['rows'].split(',')[0]) - 1
+    d = int(data['rows'].split(',')[1]) + 1
+    new_df = df.loc[c: d]
+    # new_df1 = filtration("shape", df.loc[c: d])
+    # new_df2 = filtration("state", df.loc[c: d])
+    a1 = graphics(new_df)
+    return render_template("visualize.html", pic1=a1)
+
+
+# Function for graphics
+def graphics(new_df):
+    sns.set(rc={"figure.figsize": (7.5, 4)}, font_scale=0.7)
+    bplot = sns.boxplot(data=new_df, x="shape", y="duration", width=0.5)
+    bplot.axes.set_title("Shapes", fontsize=16)
+    bplot.figure.savefig("1.jpg", format="jpeg", dpi=100)
+    return "1.jpg"
 
 
 # Function for grouping data
@@ -70,7 +97,6 @@ def filtration(filter_arg, new_df):
     mean_duration = new_df.groupby(filter_arg)[['duration']].mean()
     duration['max'] = max_duration['duration']
     duration['average'] = mean_duration['duration']
-    # new_df[data['filter']] = new_df.axes[0].values
     duration[filter_arg] = duration.axes[0].values
     return duration
 

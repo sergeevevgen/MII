@@ -16,7 +16,7 @@
             <button type=submit>Ввести!</button>
         </form>
     </div>
-     <div class="central">
+    <div class="central">
         <form action='{{link}}/filters' method=get>
             <fieldset>
                 <legend>Выберите атрибут фильтрации:</legend>
@@ -43,6 +43,15 @@
                       <button type="submit">Выбрать!</button>
                     </div>
               </fieldset>
+        </form>
+    </div>
+    <div class="central">
+        <form action='{{link}}/visualization' method=get>
+            <h4>Строки</h4>
+            <input type=text size=20 name=rows>
+            <div>
+                <button type="submit">Визуализировать</button>
+            </div>
         </form>
     </div>
 </body>

@@ -75,3 +75,19 @@ button:active {
   color: black;
   outline: 1px solid black;
 }
+
+.link_btn {
+    background-color: black;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 0;
+    border: 0;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: default;
+}
+
+.link_btn:hover {
+    color: #999;
+}
