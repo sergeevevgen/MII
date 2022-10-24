@@ -1,11 +1,11 @@
+import math
+
 import pandas as pd
-# import self as self
+from bitarray import bitarray
 from flask import Flask, redirect, url_for, request, render_template
 import json
 import plotly
 import plotly.express as px
-from bitarray import bitarray
-import math
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
@@ -34,7 +34,9 @@ def get_data():
     new_df = df.iloc[c: d, a: b]
     return render_template("datatable.html", link=link, column_names=new_df.columns.values,
                            row_data=list(new_df.values.tolist()), column_types=new_df.dtypes,
-                           null_values=new_df.isnull().sum(axis=0).array, about=about, zip=zip)
+                           null_values=new_df.isnull().sum(axis=0).array, about=about, description='Количество '
+                                                                                                   'нулевых '
+                                                                                                   'значений', zip=zip)
 
 
 @app.route("/filters", methods=['GET'])
@@ -69,6 +71,29 @@ def visualization():
         gr = graphics(d, 'difference', ["min", "max", "mean"], "Graphic represent difference", type_gr='scatter')
         return render_template("visualize.html", graphJSON=gr)
     return render_template("visualize.html")
+
+
+@app.route("/bloom_filter", methods=['GET'])
+def bloom_filter():
+    newdf = df.iloc[0: 100, 0: 7]
+    data = request.args
+    bloom = BloomFilter(200, 100)
+    key_word_array = ["shape", "city", "state", "duration", "UFO"]
+    str_ = "Full text and geocoded UFO sightings reports from the National UFO Research Center (NUFORCE). There are " \
+           "its shape, city, state and duration"
+
+    for i in range(len(key_word_array)):
+        bloom.add_to_filter(key_word_array[i])
+
+    if not bloom.check_is_not_in_filter(data['key']):
+        datafound = "Данные по ключевому слову ", data['key'], " найдены"
+        if data['key'].lower() in str_.lower():
+            return render_template("datatable.html", title="НЛО", subtitle="Наблюдение НЛО в США",
+                                   column_names=newdf.columns.values,
+                                   row_data=list(newdf.values.tolist()), about=datafound, description=str_, zip=zip)
+    else:
+        datafound = "Данные по ключевому слову ", data['key'], " не найдены"
+    return render_template("datatable.html", about=datafound, title="Ошибка", subtitle="Не найдено")
 
 
 # Function for graphics
@@ -112,6 +137,35 @@ def filtration(filter_arg, new_df):
     duration['average'] = mean_duration['duration']
     duration[filter_arg] = duration.axes[0].values
     return duration
+
+
+class BloomFilter(object):
+
+    def __init__(self, size, number_expected_elements=100):
+        self.size = size
+        self.number_expected_elements = number_expected_elements
+        self.bloom_filter = bitarray(self.size)
+        self.bloom_filter.setall(0)
+        self.number_hash_functions = round((self.size / self.number_expected_elements) * math.log(2))
+
+    def _hash_djb2(self, s):
+        hash_ = 5381
+        for x in s:
+            hash_ = ((hash_ << 5) + hash_) + ord(x)
+        return hash_ % self.size
+
+    def _hash(self, item, K):
+        return self._hash_djb2(str(K) + item)
+
+    def add_to_filter(self, item):
+        for i in range(self.number_hash_functions):
+            self.bloom_filter[self._hash(item, i)] = 1
+
+    def check_is_not_in_filter(self, item):
+        for i in range(self.number_hash_functions):
+            if self.bloom_filter[self._hash(item, i)] == 0:
+                return True
+        return False
 
 
 if __name__ == "__main__":
