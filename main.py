@@ -1,11 +1,14 @@
 import pandas as pd
+# import self as self
 from flask import Flask, redirect, url_for, request, render_template
-from random import randint
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+import json
+import plotly
+import plotly.express as px
+from bitarray import bitarray
+import math
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
+df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
@@ -25,9 +28,9 @@ def index():
 def get_data():
     data = request.args
     a = int(data['columns'].split(',')[0]) - 1
-    b = int(data['columns'].split(',')[1]) + 1
+    b = int(data['columns'].split(',')[1])
     c = int(data['rows'].split(',')[0]) - 1
-    d = int(data['rows'].split(',')[1]) + 1
+    d = int(data['rows'].split(',')[1])
     new_df = df.iloc[c: d, a: b]
     return render_template("datatable.html", link=link, column_names=new_df.columns.values,
                            row_data=list(new_df.values.tolist()), column_types=new_df.dtypes,
@@ -38,37 +41,47 @@ def get_data():
 def filters():
     data = request.args
     str_start = int(data['rows'].split(',')[0]) - 1
-    str_end = int(data['rows'].split(',')[1]) + 1
+    str_end = int(data['rows'].split(',')[1]) - 1
     new_df = df.loc[str_start: str_end]
     new_df = filtration(data['filter'], new_df)
     return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
-                           title_info=about_filtration + data['filter'], zip=zip, title=data['filter'].capitalize())
-
-
-@app.route("/visualize", methods=['GET'])
-def visualize():
-    return render_template("visualize.html", link=link, title="Визуализация")
+                           title_info=about_filtration + data['filter'], zip=zip)
 
 
 @app.route("/visualization", methods=['GET'])
 def visualization():
     data = request.args
     c = int(data['rows'].split(',')[0]) - 1
-    d = int(data['rows'].split(',')[1]) + 1
+    d = int(data['rows'].split(',')[1]) - 1
     new_df = df.loc[c: d]
-    # new_df1 = filtration("shape", df.loc[c: d])
-    # new_df2 = filtration("state", df.loc[c: d])
-    a1 = graphics(new_df)
-    return render_template("visualize.html", pic1=a1)
+    if data['filter'] == 'shape':
+        gr = graphics(new_df, 'shape', 'duration', "Graphic represent shape/duration correlation", type_gr='bar')
+        return render_template("visualize.html", graphJSON=gr)
+    if data['filter'] == 'state':
+        gr = graphics(new_df, 'state', 'duration', "Graphic represent state/duration correlation", type_gr='scatter')
+        return render_template("visualize.html", graphJSON=gr)
+    if data['filter'] == 'duration':
+        d = filtration(data['filter'], new_df)
+        gr = graphics(d, 'duration', ["min", "max", "mean"], "Graphic represent duration", type_gr='scatter')
+        return render_template("visualize.html", graphJSON=gr)
+    if data['filter'] == 'difference':
+        d = filtration(data['filter'], new_df)
+        gr = graphics(d, 'difference', ["min", "max", "mean"], "Graphic represent difference", type_gr='scatter')
+        return render_template("visualize.html", graphJSON=gr)
+    return render_template("visualize.html")
 
 
 # Function for graphics
-def graphics(new_df):
-    sns.set(rc={"figure.figsize": (7.5, 4)}, font_scale=0.7)
-    bplot = sns.boxplot(data=new_df, x="shape", y="duration", width=0.5)
-    bplot.axes.set_title("Shapes", fontsize=16)
-    bplot.figure.savefig("1.jpg", format="jpeg", dpi=100)
-    return "1.jpg"
+def graphics(new_df, x, y, title, type_gr):
+    if type_gr == 'bar':
+        fig = px.bar(new_df, x=x, y=y,
+                     barmode='group', title=title)
+        graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        return graph_json
+    if type_gr == 'scatter':
+        fig = px.scatter(new_df, x=x, y=y, title=title)
+        graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        return graph_json
 
 
 # Function for grouping data

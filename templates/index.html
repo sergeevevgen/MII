@@ -47,11 +47,39 @@
     </div>
     <div class="central">
         <form action='{{link}}/visualization' method=get>
-            <h4>Строки</h4>
+            <fieldset>
+                <legend>Выберите атрибут визуализации:</legend>
+                    <h4>Строки</h4>
+                    <input type=text size=20 name=rows>
+                    <div class="radio_div">
+                        <input type="radio" id="visChoice1"
+                        name="filter" value="shape" checked>
+                        <label for="visChoice1">По формам</label>
+
+                        <input type="radio" id="visChoice2"
+                        name="filter" value="state">
+                        <label for="visChoice2">По штатам</label>
+
+                        <input type="radio" id="visChoice3"
+                        name="filter" value="duration">
+                        <label for="visChoice3">По длительности</label>
+
+                        <input type="radio" id="visChoice4"
+                        name="filter" value="difference">
+                        <label for="visChoice4">По публикации</label>
+                    </div>
+                    <div>
+                      <button type="submit">Выбрать!</button>
+                    </div>
+              </fieldset>
+        </form>
+    </div>
+    <div class="central">
+        <form action='{{link}}/bloom_filter' method=get>
+            <h2>Ключевое слово</h2>
             <input type=text size=20 name=rows>
-            <div>
-                <button type="submit">Визуализировать</button>
-            </div>
+            <br>
+            <button type=submit>Поиск</button>
         </form>
     </div>
 </body>
