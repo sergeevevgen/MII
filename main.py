@@ -23,9 +23,9 @@ def index():
 def get_data():
     data = request.args
     a = int(data['columns'].split(',')[0]) - 1
-    b = int(data['columns'].split(',')[1]) + 1
+    b = int(data['columns'].split(',')[1])
     c = int(data['rows'].split(',')[0]) - 1
-    d = int(data['rows'].split(',')[1]) + 1
+    d = int(data['rows'].split(',')[1])
     new_df = df.iloc[c: d, a: b]
     return render_template("datatable.html", link=link, column_names=new_df.columns.values,
                            row_data=list(new_df.values.tolist()), column_types=new_df.dtypes,
@@ -36,10 +36,9 @@ def get_data():
 def filters():
     data = request.args
     str_start = int(data['rows'].split(',')[0]) - 1
-    str_end = int(data['rows'].split(',')[1]) + 1
+    str_end = int(data['rows'].split(',')[1]) - 1
     new_df = df.loc[str_start: str_end]
     new_df = filtration(data['filter'], new_df)
-
     return render_template("filter_table.html", df_data=list(new_df.values.tolist()), df_names=new_df.columns.values,
                            title_info=about_filtration + data['filter'], zip=zip)
 
@@ -70,7 +69,6 @@ def filtration(filter_arg, new_df):
     mean_duration = new_df.groupby(filter_arg)[['duration']].mean()
     duration['max'] = max_duration['duration']
     duration['average'] = mean_duration['duration']
-    # new_df[data['filter']] = new_df.axes[0].values
     duration[filter_arg] = duration.axes[0].values
     return duration
 
