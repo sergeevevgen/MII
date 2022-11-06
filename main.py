@@ -20,11 +20,16 @@ about_filtration = "Фильтрация по "
 
 
 @app.route("/")
+def bloom():
+    return render_template("bloom.html", title="Фильтр Блума", link=link)
+
+
+@app.route("/index")
 def index():
     return render_template("index.html", link=link)
 
 
-@app.route("/get_data", methods=['GET'])
+@app.route("/data", methods=['GET'])
 def get_data():
     data = request.args
     a = int(data['columns'].split(',')[0]) - 1
@@ -75,25 +80,29 @@ def visualization():
 
 @app.route("/bloom_filter", methods=['GET'])
 def bloom_filter():
-    newdf = df.iloc[0: 100, 0: 7]
     data = request.args
     bloom = BloomFilter(200, 100)
-    key_word_array = ["shape", "city", "state", "duration", "UFO"]
+    key_word_array = ["shape", "city", "state", "sights", "ufo", "indians", "diabetes",
+                      "house", "sale"]
     str_ = "Full text and geocoded UFO sightings reports from the National UFO Research Center (NUFORCE). There are " \
            "its shape, city, state and duration"
+    dict_links = {'https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database':
+                      'Predict the onset of diabetes based on diagnostic measures of indians.',
+                  'https://www.kaggle.com/datasets/harlfoxem/housesalesprediction': 'This dataset contains house sale '
+                                                                                    'prices for King County'}
 
     for i in range(len(key_word_array)):
         bloom.add_to_filter(key_word_array[i])
 
     if not bloom.check_is_not_in_filter(data['key']):
-        datafound = "Данные по ключевому слову ", data['key'], " найдены"
+        # data_found = "Данные по ключевому слову ", data['key'], " найдены"
         if data['key'].lower() in str_.lower():
-            return render_template("datatable.html", title="НЛО", subtitle="Наблюдение НЛО в США",
-                                   column_names=newdf.columns.values,
-                                   row_data=list(newdf.values.tolist()), about=datafound, description=str_, zip=zip)
-    else:
-        datafound = "Данные по ключевому слову ", data['key'], " не найдены"
-    return render_template("datatable.html", about=datafound, title="Ошибка", subtitle="Не найдено")
+            return redirect(link + "/index")
+        for i in dict_links.keys():
+            if data['key'] in dict_links[i].lower():
+                return redirect(i)
+    return render_template("bloom.html", about="Данные по ключевому слову " + data['key'] + " не найдены",
+                           title="Фильтр блума")
 
 
 # Function for graphics
@@ -107,6 +116,7 @@ def graphics(new_df, x, y, title, type_gr):
         fig = px.scatter(new_df, x=x, y=y, title=title)
         graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
+    return
 
 
 # Function for grouping data
@@ -139,6 +149,7 @@ def filtration(filter_arg, new_df):
     return duration
 
 
+# Bloom filter
 class BloomFilter(object):
 
     def __init__(self, size, number_expected_elements=100):
