@@ -81,21 +81,20 @@ def visualization():
 @app.route("/bloom_filter", methods=['GET'])
 def bloom_filter():
     data = request.args
-    bloom = BloomFilter(200, 100)
+    f_bloom = BloomFilter(200, 100)
     key_word_array = ["shape", "city", "state", "sights", "ufo", "indians", "diabetes",
                       "house", "sale"]
     str_ = "Full text and geocoded UFO sightings reports from the National UFO Research Center (NUFORCE). There are " \
-           "its shape, city, state and duration"
+           "its shape, city, state and duration, and other kinds of sights"
     dict_links = {'https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database':
                       'Predict the onset of diabetes based on diagnostic measures of indians.',
                   'https://www.kaggle.com/datasets/harlfoxem/housesalesprediction': 'This dataset contains house sale '
                                                                                     'prices for King County'}
 
     for i in range(len(key_word_array)):
-        bloom.add_to_filter(key_word_array[i])
+        f_bloom.add_to_filter(key_word_array[i])
 
-    if not bloom.check_is_not_in_filter(data['key']):
-        # data_found = "Данные по ключевому слову ", data['key'], " найдены"
+    if not f_bloom.check_is_not_in_filter(data['key']):
         if data['key'].lower() in str_.lower():
             return redirect(link + "/index")
         for i in dict_links.keys():
