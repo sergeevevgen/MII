@@ -9,12 +9,6 @@ a = []
 for i in range(0, len(column_names)):
     k = df[column_names[i]].mode()[0]
     a.append(k)
-    # elif column_type[i] == 'int64':
-    #     k = df[column_names[i]].mean()
-    #     a.append(k)
-    # elif column_type[i] == 'float64':
-    #     k = df[column_names[i]].mean()
-    #     a.append(k)
 
 for i in range(0, int(len(df.index) * 0.1)):
     df.loc[-1] = a

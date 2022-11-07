@@ -1,5 +1,5 @@
 import math
-
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 from bitarray import bitarray
 from flask import Flask, redirect, url_for, request, render_template
@@ -37,7 +37,7 @@ def get_data():
     c = int(data['rows'].split(',')[0]) - 1
     d = int(data['rows'].split(',')[1])
     new_df = df.iloc[c: d, a: b]
-    return render_template("datatable.html", link=link, column_names=new_df.columns.values,
+    return render_template("datatable.html", title="НЛО", link=link, column_names=new_df.columns.values,
                            row_data=list(new_df.values.tolist()), column_types=new_df.dtypes,
                            null_values=new_df.isnull().sum(axis=0).array, about=about, description='Количество '
                                                                                                    'нулевых '
@@ -76,6 +76,34 @@ def visualization():
         gr = graphics(d, 'difference', ["min", "max", "mean"], "Graphic represent difference", type_gr='scatter')
         return render_template("visualize.html", graphJSON=gr)
     return render_template("visualize.html")
+
+
+@app.route("/linear_regression", methods=['GET'])
+def linear_reg():
+    data = []
+    new_df = df
+    new_df['date_time'] = pd.to_datetime(new_df['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
+    new_df['date_time'] = new_df['date_time'].dt.strftime('%m')
+    for i in new_df['date_time']:
+        if i == "1" or "2" or "12":
+            data.append("winter")
+        if i == "3" or "4" or "5":
+            data.append("spring")
+        if i == "6" or "7" or "8":
+            data.append("summer")
+        if i == "9" or "10" or "11":
+            data.append("autumn")
+
+    k = round(len(new_df.axes[0]) * 0.99)
+    # x = data[:k]
+    # y = new_df['duration'][:k]
+    new_df2 = pd.DataFrame()
+    new_df2['season'] = data[:k]
+    new_df2['duration'] = new_df['duration'][:k]
+    model = LinearRegression()
+    model.fit(new_df2['season'], new_df2['duration'])
+    gr = graphics(new_df2, "season", "duration", "regression", 'scatter')
+    return render_template("visualize.html", graphJSON=gr)
 
 
 @app.route("/bloom_filter", methods=['GET'])
