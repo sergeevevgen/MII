@@ -1,14 +1,18 @@
 import math
-from sklearn.linear_model import LinearRegression
+
+import numpy as np
 import pandas as pd
 from bitarray import bitarray
 from flask import Flask, redirect, url_for, request, render_template
+from flask import Markup
 import json
 import plotly
 import plotly.express as px
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
+df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
+
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
@@ -81,29 +85,49 @@ def visualization():
 @app.route("/linear_regression", methods=['GET'])
 def linear_reg():
     data = []
-    new_df = df
-    new_df['date_time'] = pd.to_datetime(new_df['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
-    new_df['date_time'] = new_df['date_time'].dt.strftime('%m')
-    for i in new_df['date_time']:
-        if i == "1" or "2" or "12":
-            data.append("winter")
-        if i == "3" or "4" or "5":
-            data.append("spring")
-        if i == "6" or "7" or "8":
-            data.append("summer")
-        if i == "9" or "10" or "11":
-            data.append("autumn")
+    df_linear_reg['date_time'] = pd.to_datetime(df_linear_reg['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
+    df_linear_reg['date_time'] = df_linear_reg['date_time'].dt.strftime('%m')
+    for (i, j) in df_linear_reg['date_time'].iteritems():
+        if j == '01' or j == '02' or j == '12':
+            data.append(1)
+        if j == '03' or j == '04' or j == '05':
+            data.append(2)
+        if j == '06' or j == '07' or j == '08':
+            data.append(3)
+        if j == '09' or j == '10' or j == '11':
+            data.append(4)
 
-    k = round(len(new_df.axes[0]) * 0.99)
-    # x = data[:k]
-    # y = new_df['duration'][:k]
-    new_df2 = pd.DataFrame()
-    new_df2['season'] = data[:k]
-    new_df2['duration'] = new_df['duration'][:k]
-    model = LinearRegression()
-    model.fit(new_df2['season'], new_df2['duration'])
-    gr = graphics(new_df2, "season", "duration", "regression", 'scatter')
-    return render_template("visualize.html", graphJSON=gr)
+    # k = round(len(df_linear_reg.axes[0]) * 0.99 * 0.9)
+    k = 132929
+    x = np.array(data[:k])
+    y = np.array(df_linear_reg['duration'].head(k))
+    gr_df = pd.DataFrame({'season': x, 'duration': list(y)}, columns=['season', 'duration'])
+    gr = graphics(gr_df, x='season', y='duration', title='Linear regression 99%', type_gr='scatter_fig')
+    # gr = plot([Scatter(x=x, y=y)], output_type='div')
+    # Парная линейная регрессия
+    sum_x = sum(x)
+    sum_y = sum(y)
+    sum_xy = sum(x * y)
+    sum_xx = sum(x * x)
+    b1 = (sum_xy - (sum_y * sum_x) / k) / (sum_xx - sum_x * sum_x / k)
+    b0 = (sum_y - b1 * sum_x) / k
+
+    # y = 0.00026834x - 10.00021431
+    # b1 = 0.00026834
+    # b0 = 10.00021431
+
+    x1 = np.array(data[(k + 1):])
+    y1 = []
+    for i in x1:
+        y1.append(regres_math(b1, b0, i))
+
+    y1 = np.array(y1)
+
+    gr_df_2 = pd.DataFrame({'season': x1, 'duration': list(y1)}, columns=['season', 'duration'])
+    gr_2 = graphics(gr_df_2, x='season', y='duration', title='Linear regression 1%', type_gr='scatter_fig')
+    # gr_2 = plot([Scatter(x=x1, y=y1)], output_type='div')
+    # return render_template("visualize.html", graphJSON=gr, graphJSON2=gr_2)
+    return render_template("visualize.html", graph_1=Markup(gr), graph_2=Markup(gr_2))
 
 
 @app.route("/bloom_filter", methods=['GET'])
@@ -143,7 +167,10 @@ def graphics(new_df, x, y, title, type_gr):
         fig = px.scatter(new_df, x=x, y=y, title=title)
         graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
-    return
+    if type_gr == 'scatter_fig':
+        fig = px.scatter(new_df, x=x, y=y, title=title)
+        return fig.to_html(full_html=False)
+    return None
 
 
 # Function for grouping data
@@ -174,6 +201,11 @@ def filtration(filter_arg, new_df):
     duration['average'] = mean_duration['duration']
     duration[filter_arg] = duration.axes[0].values
     return duration
+
+
+# Regression func
+def regres_math(b1, b0, x):
+    return b1 * x + b0
 
 
 # Bloom filter

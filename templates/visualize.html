@@ -6,11 +6,7 @@
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-    <div id='chart' class='chart'></div>
+    {{ graph_1 }}
+    {{ graph_2 }}
 </body>
-<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-<script type='text/javascript'>
-  var graphs = {{graphJSON | safe}};
-  Plotly.plot('chart',graphs,{});
-</script>
 </html>
