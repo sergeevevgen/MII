@@ -8,10 +8,11 @@ from flask import Markup
 import json
 import plotly
 import plotly.express as px
+import statsmodels.api as sm
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
-df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
+df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_2.csv", delimiter=',')
 
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
@@ -117,6 +118,7 @@ def linear_reg():
     # b0 = 10.00021431
 
     x1 = np.array(data[(k + 1):])
+
     y1 = []
     for i in x1:
         y1.append(regres_math(b1, b0, i))
@@ -125,8 +127,7 @@ def linear_reg():
 
     gr_df_2 = pd.DataFrame({'season': x1, 'duration': list(y1)}, columns=['season', 'duration'])
     gr_2 = graphics(gr_df_2, x='season', y='duration', title='Linear regression 1%', type_gr='scatter_fig')
-    # gr_2 = plot([Scatter(x=x1, y=y1)], output_type='div')
-    # return render_template("visualize.html", graphJSON=gr, graphJSON2=gr_2)
+
     return render_template("visualize.html", graph_1=Markup(gr), graph_2=Markup(gr_2))
 
 
@@ -168,7 +169,7 @@ def graphics(new_df, x, y, title, type_gr):
         graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
     if type_gr == 'scatter_fig':
-        fig = px.scatter(new_df, x=x, y=y, title=title)
+        fig = px.scatter(new_df, x=x, y=y, title=title, trendline="ols")
         return fig.to_html(full_html=False)
     return None
 
