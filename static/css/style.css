@@ -91,3 +91,22 @@ button:active {
 .link_btn:hover {
     color: #999;
 }
+
+a {
+  background-color: black;
+  box-shadow: 0 5px 0 #2F4F4F;
+  color: white;
+  padding: 1em 1.5em;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+a:hover {
+  background-color: #708090;
+}
+
+a:active {
+  box-shadow: none;
+  top: 5px;
+}

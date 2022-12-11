@@ -1,5 +1,5 @@
+import base64
 import math
-
 import numpy as np
 import pandas as pd
 from bitarray import bitarray
@@ -8,12 +8,16 @@ from flask import Markup
 import json
 import plotly
 import plotly.express as px
-import statsmodels.api as sm
+from sklearn import tree
+import matplotlib.pyplot as plt
+from io import BytesIO
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
 df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_2.csv", delimiter=',')
-
+flag = False
+flag_file = False
+file = BytesIO()
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
@@ -85,26 +89,25 @@ def visualization():
 
 @app.route("/linear_regression", methods=['GET'])
 def linear_reg():
-    data = []
-    df_linear_reg['date_time'] = pd.to_datetime(df_linear_reg['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
-    df_linear_reg['date_time'] = df_linear_reg['date_time'].dt.strftime('%m')
-    for (i, j) in df_linear_reg['date_time'].iteritems():
-        if j == '01' or j == '02' or j == '12':
-            data.append(1)
-        if j == '03' or j == '04' or j == '05':
-            data.append(2)
-        if j == '06' or j == '07' or j == '08':
-            data.append(3)
-        if j == '09' or j == '10' or j == '11':
-            data.append(4)
-
+    # data = []
+    # df_linear_reg['date_time'] = pd.to_datetime(df_linear_reg['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
+    # df_linear_reg['date_time'] = df_linear_reg['date_time'].dt.strftime('%m')
+    # for (i, j) in df_linear_reg['date_time'].iteritems():
+    #     if j == '01' or j == '02' or j == '12':
+    #         data.append(1)
+    #     if j == '03' or j == '04' or j == '05':
+    #         data.append(2)
+    #     if j == '06' or j == '07' or j == '08':
+    #         data.append(3)
+    #     if j == '09' or j == '10' or j == '11':
+    #         data.append(4)
+    data = seasons_format()
     # k = round(len(df_linear_reg.axes[0]) * 0.99 * 0.9)
     k = 132929
     x = np.array(data[:k])
     y = np.array(df_linear_reg['duration'].head(k))
     gr_df = pd.DataFrame({'season': x, 'duration': list(y)}, columns=['season', 'duration'])
     gr = graphics(gr_df, x='season', y='duration', title='Linear regression 99%', type_gr='scatter_fig')
-    # gr = plot([Scatter(x=x, y=y)], output_type='div')
     # Парная линейная регрессия
     sum_x = sum(x)
     sum_y = sum(y)
@@ -157,6 +160,41 @@ def bloom_filter():
                            title="Фильтр блума")
 
 
+@app.route("/tree", methods=['GET'])
+def tree_visual():
+    attrs = df_linear_reg[['city']].head(30).copy()
+    data = seasons_format()
+
+    uniq = attrs['city'].unique()
+    city_format = []
+    dict_city = dict()
+    for i in range(len(uniq)):
+        dict_city[uniq[i]] = i
+
+    for i in range(len(attrs.values)):
+        city_format.append(dict_city.get(attrs['city'].iloc[i]))
+
+    d2 = []
+    for i in range(30):
+        d2.append(data[i])
+    attrs['seasons'] = d2
+    attrs['city'] = city_format
+    answer = df_linear_reg[['duration']].head(30).copy()
+
+    model = tree.DecisionTreeClassifier(criterion="entropy")
+    model.fit(attrs.values, answer.values)
+
+    global file
+    global flag_file
+    if not flag_file:
+        plt.figure(figsize=(40, 40))
+        tree.plot_tree(model, filled=True)
+        plt.savefig(file, format='png')
+        flag_file = True
+    code = base64.b64encode(file.getvalue()).decode('utf-8')
+    return render_template("tree.html", encoded=code, score=model.score(attrs.values, answer.values))
+
+
 # Function for graphics
 def graphics(new_df, x, y, title, type_gr):
     if type_gr == 'bar':
@@ -207,6 +245,36 @@ def filtration(filter_arg, new_df):
 # Regression func
 def regres_math(b1, b0, x):
     return b1 * x + b0
+
+
+# Function for seasons
+def seasons_format():
+    data = []
+    global flag
+    if not flag:
+        df_linear_reg['date_time'] = pd.to_datetime(df_linear_reg['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
+        df_linear_reg['date_time'] = df_linear_reg['date_time'].dt.strftime('%m')
+        for (i, j) in df_linear_reg['date_time'].iteritems():
+            if j == '01' or j == '02' or j == '12':
+                data.append(1)
+            if j == '03' or j == '04' or j == '05':
+                data.append(2)
+            if j == '06' or j == '07' or j == '08':
+                data.append(3)
+            if j == '09' or j == '10' or j == '11':
+                data.append(4)
+        flag = True
+    else:
+        for (i, j) in df_linear_reg['date_time'].iteritems():
+            if j == '01' or j == '02' or j == '12':
+                data.append(1)
+            if j == '03' or j == '04' or j == '05':
+                data.append(2)
+            if j == '06' or j == '07' or j == '08':
+                data.append(3)
+            if j == '09' or j == '10' or j == '11':
+                data.append(4)
+    return data
 
 
 # Bloom filter
