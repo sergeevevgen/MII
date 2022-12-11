@@ -11,19 +11,31 @@ import plotly.express as px
 from sklearn import tree
 import matplotlib.pyplot as plt
 from io import BytesIO
+from sklearn.cluster import KMeans
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
-df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
+# df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
 df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_2.csv", delimiter=',')
 flag = False
 flag_file = False
 file = BytesIO()
+file2 = BytesIO()
+flag_file2 = False
 app = Flask(__name__)
 about = "Полный текст и геокодированные отчеты о наблюдениях НЛО от Национального центра исследований НЛО (NUFORC). " \
         "Национальный центр исследований НЛО (NUFORC) собирает и обслуживает более 100 000 сообщений о наблюдениях " \
         "НЛО. Этот набор данных содержит само содержимое отчета, включая время, длительность местоположения и другие " \
         "атрибуты, как в необработанном виде, как оно записано на сайте NUFORC, так и в уточненной " \
         "стандартизированной форме, которая также содержит координаты широты. "
+str_str = "Обучение без учителя - метод k-средних Это итеративный алгоритм кластеризации, основанный на минимизации " \
+          "суммарных квадратичных отклонений точек кластеров от центроидов (средних координат) этих кластеров." \
+          " Первоначально выбирается желаемое количество кластеров. Теперь случайным образом из входных данных " \
+          "выбираются три элемента выборки, в соответствие которым ставятся три кластера, в каждый из которых теперь " \
+          "включено по одной точке, каждая при этом является центроидом этого кластера. Далее ищем ближайшего соседа " \
+          "текущего центроида. Добавляем точку к соответствующему кластеру и пересчитываем положение центроида с учетом" \
+          " координат новых точек.  Алгоритм заканчивает работу, когда координаты каждого центроида перестают меняться." \
+          " Центроид каждого кластера в результате представляет собой набор значений признаков, описывающих усредненные" \
+          " параметры выделенных классов."
 link = "http://127.0.0.1:5000"
 about_filtration = "Фильтрация по "
 
@@ -89,18 +101,6 @@ def visualization():
 
 @app.route("/linear_regression", methods=['GET'])
 def linear_reg():
-    # data = []
-    # df_linear_reg['date_time'] = pd.to_datetime(df_linear_reg['date_time'], format='%Y/%m/%dT%H:%M:%S').copy()
-    # df_linear_reg['date_time'] = df_linear_reg['date_time'].dt.strftime('%m')
-    # for (i, j) in df_linear_reg['date_time'].iteritems():
-    #     if j == '01' or j == '02' or j == '12':
-    #         data.append(1)
-    #     if j == '03' or j == '04' or j == '05':
-    #         data.append(2)
-    #     if j == '06' or j == '07' or j == '08':
-    #         data.append(3)
-    #     if j == '09' or j == '10' or j == '11':
-    #         data.append(4)
     data = seasons_format()
     # k = round(len(df_linear_reg.axes[0]) * 0.99 * 0.9)
     k = 132929
@@ -195,6 +195,66 @@ def tree_visual():
     return render_template("tree.html", encoded=code, score=model.score(attrs.values, answer.values))
 
 
+@app.route("/clusters", methods=['GET'])
+def clusters():
+    attrs = df_linear_reg[['city']].copy()
+    data = seasons_format()
+
+    uniq = attrs['city'].unique()
+    city_format = []
+    dict_city = dict()
+    for i in range(len(uniq)):
+        dict_city[uniq[i]] = i
+
+    for i in range(len(attrs.values)):
+        city_format.append(dict_city.get(attrs['city'].iloc[i]))
+
+    k = min(len(data), len(attrs['city'].values))
+
+    data_city = []
+    for i in range(k):
+        data_city.append(city_format[i])
+
+    uniq = df_linear_reg['state'].unique()
+    state_format = []
+    dict_state = dict()
+    for i in range(len(uniq)):
+        dict_state[uniq[i]] = i
+
+    for i in range(len(df_linear_reg['state'].head(k))):
+        state_format.append(dict_state.get(df_linear_reg['state'].iloc[i]))
+
+    uniq = df_linear_reg['shape'].unique()
+    shape_format = []
+    dict_shape = dict()
+    for i in range(len(uniq)):
+        dict_shape[uniq[i]] = i
+
+    for i in range(len(df_linear_reg['shape'].head(k))):
+        shape_format.append(dict_shape.get(df_linear_reg['shape'].iloc[i]))
+
+    # new_df = attrs.head(k).copy()
+    # new_df['state'] = state_format
+    # new_df['shape'] = shape_format
+    # new_df['city'] = data_city
+
+    new_df = pd.DataFrame()
+    new_df['season'] = data
+    new_df['duration'] = df_linear_reg[['duration']].head(k).copy()
+
+    model = KMeans(n_clusters=3)
+    model.fit(new_df)
+
+    global file2
+    global flag_file2
+    if not flag_file2:
+        plt.scatter(new_df['season'], new_df['duration'], c=model.labels_, cmap='rainbow')
+        plt.savefig(file2, format='png')
+        flag_file2 = True
+    code = base64.b64encode(file2.getvalue()).decode('utf-8')
+    return render_template("clusters.html", about=str_str, encoded=code)
+
+
 # Function for graphics
 def graphics(new_df, x, y, title, type_gr):
     if type_gr == 'bar':
@@ -274,6 +334,7 @@ def seasons_format():
                 data.append(3)
             if j == '09' or j == '10' or j == '11':
                 data.append(4)
+
     return data
 
 
@@ -294,7 +355,7 @@ class BloomFilter(object):
         return hash_ % self.size
 
     def _hash(self, item, K):
-        return self._hash_djb2(str(K) + item)
+        return self._hash_djb2(str_str(K) + item)
 
     def add_to_filter(self, item):
         for i in range(self.number_hash_functions):

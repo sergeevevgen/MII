@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="30%">
-      <change afterPath="$PROJECT_DIR$/templates/tree.html" afterDir="false" />
+    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="а">
+      <change afterPath="$PROJECT_DIR$/templates/clusters.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/tree.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/tree.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +27,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="branch_5(paired_linear_regression)" />
+        <entry key="$PROJECT_DIR$" value="branch_6(decision_tree)" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -130,7 +130,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667807369009</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="а">
+      <created>1670760815475</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1670760815475</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,6 +153,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="done" />
-    <option name="LAST_COMMIT_MESSAGE" value="done" />
+    <MESSAGE value="а" />
+    <option name="LAST_COMMIT_MESSAGE" value="а" />
   </component>
 </project>
