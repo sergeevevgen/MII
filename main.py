@@ -14,7 +14,6 @@ from io import BytesIO
 from sklearn.cluster import KMeans
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
-# df2 = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_new.csv", delimiter=',')
 df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_2.csv", delimiter=',')
 flag = False
 flag_file = False
@@ -27,7 +26,7 @@ about = "Полный текст и геокодированные отчеты 
         "НЛО. Этот набор данных содержит само содержимое отчета, включая время, длительность местоположения и другие " \
         "атрибуты, как в необработанном виде, как оно записано на сайте NUFORC, так и в уточненной " \
         "стандартизированной форме, которая также содержит координаты широты. "
-str_str = "Обучение без учителя - метод k-средних Это итеративный алгоритм кластеризации, основанный на минимизации " \
+about_clusters = "Обучение без учителя - метод k-средних Это итеративный алгоритм кластеризации, основанный на минимизации " \
           "суммарных квадратичных отклонений точек кластеров от центроидов (средних координат) этих кластеров." \
           " Первоначально выбирается желаемое количество кластеров. Теперь случайным образом из входных данных " \
           "выбираются три элемента выборки, в соответствие которым ставятся три кластера, в каждый из которых теперь " \
@@ -84,18 +83,18 @@ def visualization():
     new_df = df.loc[c: d]
     if data['filter'] == 'shape':
         gr = graphics(new_df, 'shape', 'duration', "Graphic represent shape/duration correlation", type_gr='bar')
-        return render_template("visualize.html", graphJSON=gr)
+        return render_template("visualize.html", graph_1=Markup(gr))
     if data['filter'] == 'state':
         gr = graphics(new_df, 'state', 'duration', "Graphic represent state/duration correlation", type_gr='scatter')
-        return render_template("visualize.html", graphJSON=gr)
+        return render_template("visualize.html", graph_1=Markup(gr))
     if data['filter'] == 'duration':
         d = filtration(data['filter'], new_df)
         gr = graphics(d, 'duration', ["min", "max", "mean"], "Graphic represent duration", type_gr='scatter')
-        return render_template("visualize.html", graphJSON=gr)
+        return render_template("visualize.html", graph_1=Markup(gr))
     if data['filter'] == 'difference':
         d = filtration(data['filter'], new_df)
         gr = graphics(d, 'difference', ["min", "max", "mean"], "Graphic represent difference", type_gr='scatter')
-        return render_template("visualize.html", graphJSON=gr)
+        return render_template("visualize.html", graph_1=Markup(gr))
     return render_template("visualize.html")
 
 
@@ -248,11 +247,12 @@ def clusters():
     global file2
     global flag_file2
     if not flag_file2:
+        plt.switch_backend('agg')
         plt.scatter(new_df['season'], new_df['duration'], c=model.labels_, cmap='rainbow')
         plt.savefig(file2, format='png')
         flag_file2 = True
     code = base64.b64encode(file2.getvalue()).decode('utf-8')
-    return render_template("clusters.html", about=str_str, encoded=code)
+    return render_template("clusters.html", about=about_clusters, encoded=code)
 
 
 # Function for graphics
@@ -260,12 +260,10 @@ def graphics(new_df, x, y, title, type_gr):
     if type_gr == 'bar':
         fig = px.bar(new_df, x=x, y=y,
                      barmode='group', title=title)
-        graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        return graph_json
+        return fig.to_html(full_html=False)
     if type_gr == 'scatter':
         fig = px.scatter(new_df, x=x, y=y, title=title)
-        graph_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        return graph_json
+        return fig.to_html(full_html=False)
     if type_gr == 'scatter_fig':
         fig = px.scatter(new_df, x=x, y=y, title=title, trendline="ols")
         return fig.to_html(full_html=False)
@@ -355,7 +353,7 @@ class BloomFilter(object):
         return hash_ % self.size
 
     def _hash(self, item, K):
-        return self._hash_djb2(str_str(K) + item)
+        return self._hash_djb2(str(K) + item)
 
     def add_to_filter(self, item):
         for i in range(self.number_hash_functions):
