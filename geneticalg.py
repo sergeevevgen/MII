@@ -46,12 +46,12 @@ def generate_population(size: int, genome_length: int) -> Population:
 
 
 # Фитнесс-функция - определяет приспособленность генов
-def fitness(genome: Genome, localities: [Locality], value_limit: int, distance_limit: int) -> int:
-    if len(genome) != len(localities):
-        raise ValueError("genom и cities должны быть одинаковой длины!")
+def fitness(genome: Genome, localities1: [Locality], value_limit: int, distance_limit: int) -> int:
+    if len(genome) != len(localities1):
+        raise ValueError("genome и localities должны быть одинаковой длины!")
     value = 0
     distance = 0
-    for i, local in enumerate(localities):
+    for i, local in enumerate(localities1):
         if genome[i] == 1:
             value += local.supplies
             distance += local.distance
@@ -80,7 +80,7 @@ def single_point_crossover(a: Genome, b: Genome) -> Tuple[Genome, Genome]:
 def mutation(genome: Genome, num: int = 1, probability: float = 0.1) -> Genome:
     for _ in range(num):
         index = randrange(len(genome))
-        genome[index] = genome[index] if randint(0, 10) == (probability * 10) else abs(genome[index] - 1)
+        genome[index] = genome[index] if randint(0, 10) != (probability * 10) else abs(genome[index] - 1)
     return genome
 
 
@@ -89,7 +89,6 @@ def run_evolution(populate_func: PopulateFunc, fitness_func: FitnessFunc,
                   fitness_limit: int, selection_func: SelectionFunc = selection_pair,
                   crossover_func: CrossoverFunc = single_point_crossover, mutation_func: MutationFunc = mutation,
                   generation_limit: int = 100) -> Tuple[Population, int]:
-
     population = populate_func()
 
     for i in range(generation_limit):
@@ -118,7 +117,7 @@ def run_evolution(populate_func: PopulateFunc, fitness_func: FitnessFunc,
     return population, i
 
 
-#Выводит города и значения приспособленности
+# Выводит города и значения приспособленности
 def genome_to_things(genome: Genome, localities1: [Locality]) -> [Locality]:
     result = []
     value = 0

@@ -3,10 +3,8 @@ import math
 import numpy as np
 import pandas as pd
 from bitarray import bitarray
-from flask import Flask, redirect, url_for, request, render_template
+from flask import Flask, redirect, request, render_template
 from flask import Markup
-import json
-import plotly
 import plotly.express as px
 from sklearn import tree
 import matplotlib.pyplot as plt
@@ -365,21 +363,6 @@ class BloomFilter(object):
                 return True
         return False
 
-
-# class GeneticAlgorithm(object):
-#     def __init__(self, size, number_expected_elements=100):
-#         size = 10
-#         n = 10
-#         k = 10
-#
-#
-# # 2 производства, 3 города
-# producers = [[1, 2, 3],
-#              [12, 14, 15]]
-#
-# norms = [5, 6, 7]
-# road_prices = [80, 100]
-# limit = 100
 
 if __name__ == "__main__":
     app.run(debug=True)
