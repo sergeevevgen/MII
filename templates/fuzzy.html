@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Нечёткая логика</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <span>Операция пересечения заданных пользователем нечетких множеств с
+    трапециевидными функциями принадлежности</span>
+    <div class="central">
+        <form action='{{link}}/fuzzyfication' method=get>
+            <fieldset>
+                <legend>Введите параметры функций принадлежности</legend>
+                <label for="abcd">ABCD (через ;)</label>
+                <input id=abcd type=text size=20 name=abcd>
+                <label for="a1b1c1d1">A1B1C1D1 (через ;)</label>
+                <input id=a1b1c1d1 type=text size=20 name=a1b1c1d1>
+                 <legend>Введите четкие объекты (через ;)</legend>
+                <input id=objects type=text size=100 name=objects>
+                <div>
+                    <button type="submit">Ввести!</button>
+                </div>
+              </fieldset>
+        </form>
+    </div>
+</body>
+</html>

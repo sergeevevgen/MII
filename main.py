@@ -253,6 +253,26 @@ def clusters():
     return render_template("clusters.html", about=about_clusters, encoded=code)
 
 
+@app.route("/fuzzy")
+def fuzzy_ind():
+    return render_template("fuzzy.html", link=link)
+
+
+@app.route("/fuzzyfication")
+def fuzzyfication():
+    data = request.args
+    a = int(data['a'].split(';')[0])
+    b = int(data['b'].split(';')[1])
+    c = int(data['c'].split(';')[2])
+    d = int(data['d'].split(';')[3])
+    a1 = int(data['a1'].split(';')[0])
+    b1 = int(data['b1'].split(';')[1])
+    c1 = int(data['c1'].split(';')[2])
+    d1 = int(data['d1'].split(';')[3])
+    objects = data['objects'].split(';')
+    return
+
+
 # Function for graphics
 def graphics(new_df, x, y, title, type_gr):
     if type_gr == 'bar':
