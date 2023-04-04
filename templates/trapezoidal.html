@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Трапециевидное распределение</title>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h1>Оценка уровня зарплат</h1>
+        <h2>Нечёткая логика</h2>
+        <h3>Трапециевидное распределние</h3>
+        <h3>(в числовых полях размер зарплаты)</h3>
+    </div>
+    <div style="text-align: center;">
+        <form action='{{link}}/salary_visualize' method=get>
+            <h4>Введите минимальное значение шкалы зарплаты: </h4>
+            <input type="text" id="min_salary" name="min_salary" value="0"><br/>
+            <h4>Введите максимальное значение шкалы зарплаты: </h4>
+            <input type="text" id="max_salary" name="max_salary" value="100000"><br/>
+            <h4>Введите шаг значения шкалы зарплаты: </h4>
+            <input type="text" id="step_salary" name="step_salary" value="1000"><br/>
+            <h4>Введите количество оценок: </h4>
+            <input type="text" id="count" name="count" value="2"><br/>
+            <a href="#" id="salarydetails" onclick="addSalaries()">Обновить оценки</a><br/><br/>
+
+            Оценка: <input type="text" id="salary0" name="salary0" value="Низкая"><p>
+            a <input type="text" id="a0" name="a0" size="7" value="10000">
+            b <input type="text" id="b0" name="b0" size="7" value="12500">
+            c <input type="text" id="c0" name="c0" size="7" value="15000">
+            d <input type="text" id="d0" name="d0" size="7" value="18000"><br><br>
+
+            Оценка: <input type="text" id="salary1" name="salary1" value="Средняя"><p>
+            a <input type="text" id="a1" name="a1" size="7" value="17000">
+            b <input type="text" id="b1" name="b1" size="7" value="19500">
+            c <input type="text" id="c1" name="c1" size="7" value="21000">
+            d <input type="text" id="d1" name="d1" size="7" value="24300"><br><br>
+            <div id="container"></div>
+            <input type=submit value='Далее'>
+        </form>
+        <br><br>
+    </div>
+</body>
+<script type='text/javascript'>
+        function addSalaries(){
+            // Generate a dynamic number of inputs
+            var number = document.getElementById("count").value;
+            // Get the element where the inputs will be added to
+            var container = document.getElementById("container");
+            // Remove every children it had before
+            while (container.hasChildNodes()) {
+                container.removeChild(container.lastChild);
+            }
+            if(number > 2 && number <= 5) {
+                for (i=2;i<number;i++){
+                    // Append a node with a random text
+                    container.appendChild(document.createTextNode("Оценка: "));
+                    // Create an <input> element, set its type and name attributes
+                    var name = document.createElement("input");
+                    name.type = "text";
+                    name.name = "salary" + i;
+                    container.appendChild(name);
+                    var p = document.createElement("p");
+                    // Поле a
+
+                    p.appendChild(document.createTextNode("a "));
+                    var a = document.createElement("input");
+                    a.type = "text";
+                    a.name = "a" + i;
+                    a.size = 7;
+                    p.appendChild(a);
+
+                    // Поле b
+                    p.appendChild(document.createTextNode(" b "));
+                    var b = document.createElement("input");
+                    b.type = "text";
+                    b.name = "b" + i;
+                    b.size = 7;
+                    p.appendChild(b);
+
+                    // Поле c
+                    p.appendChild(document.createTextNode(" c "));
+                    var c = document.createElement("input");
+                    c.type = "text";
+                    c.name = "c" + i;
+                    c.size = 7;
+                    p.appendChild(c);
+
+                    // Поле d
+                    p.appendChild(document.createTextNode(" d "));
+                    var d = document.createElement("input");
+                    d.type = "text";
+                    d.name = "d" + i;
+                    d.size = 7;
+                    p.appendChild(d);
+
+
+                    // Append a line break
+                    container.appendChild(p);
+                    container.appendChild(document.createElement("br"));
+                    container.appendChild(document.createElement("br"));
+                }
+            }
+        }
+</script>
+<!--var buttonNext = document.createElement("input");-->
+<!--                    buttonNext.type = "submit";-->
+<!--                    buttonNext.value = "Далее"-->
+<!--                    container.appendChild(buttonNext);-->
+</html>

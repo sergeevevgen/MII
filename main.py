@@ -10,6 +10,8 @@ from sklearn import tree
 import matplotlib.pyplot as plt
 from io import BytesIO
 from sklearn.cluster import KMeans
+import skfuzzy as fuzzy
+from skfuzzy import control as ctrl
 
 df = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports.csv", delimiter=',')
 df_linear_reg = pd.read_csv("Летающие тарелки (Зона 51)/nuforc_reports_2.csv", delimiter=',')
@@ -284,7 +286,48 @@ def fuzzyfication():
         f2 = max(min((i - a1) / (b1 - a1), 1, (d1 - i) / (d1 - c1)), 0)
         results.append(min(f1, f2))
 
-    return render_template("fuzzyfication.html", nums=objects, results=results)
+    return render_template("fuzzyfication.html", nums=objects, results=results, zip=zip)
+
+
+# Оценка уровня зарплаты
+@app.route("/salary", methods=['GET'])
+def salary():
+    return render_template("trapezoidal.html", link=link)
+
+
+# Оценка уровня зарплаты - вывод графика
+@app.route("/salary_visualize", methods=['GET'])
+def salary_vis():
+    encoded = salary_plot()
+    return render_template("trapez_visual.html", encoded=encoded)
+
+
+# Создания графика
+def salary_plot():
+    data = request.args
+
+    salaries = ctrl.Antecedent(np.arange(int(data['min_salary']), int(data['max_salary']), int(data['step_salary'])),
+                               'зарплата')
+    for i in range(int(data['count'])):
+        name = 'salary' + str(i)
+        a = 'a' + str(i)
+        b = 'b' + str(i)
+        c = 'c' + str(i)
+        d = 'd' + str(i)
+        salaries[data[name]] = fuzzy.trapmf(salaries.universe,
+                                            [int(data[a]), int(data[b]), int(data[c]), int(data[d])])
+
+    # график
+    tmpfile = BytesIO()  # создание временного файла
+    salaries.view()
+    plt.title("Оценка уровня зарплаты")
+    plt.xlabel("Зарплата в месяц")
+    plt.ylabel("Степень принадлежности")
+    plt.savefig(tmpfile, format='png')
+    plt.clf()
+    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')  # кодирование
+    tmpfile.close()
+    return encoded
 
 
 # Function for graphics
