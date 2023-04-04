@@ -11,11 +11,10 @@
                 <th>Число</th>
                 <th>Пересечение</th>
         </tr>
-        {% for row in row_data %}
+        {% for ch, res in zip(nums, results) %}
             <tr>
-                {% for col, row_ in zip(column_names, row) %}
-                    <td>{{row_}}</td>
-                {% endfor %}
+                <td>{{ch}}</td>
+                <td>{{res}}</td>
             </tr>
         {% endfor %}
     </table>
