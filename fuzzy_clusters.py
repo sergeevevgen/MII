@@ -28,7 +28,7 @@ for i in range(n):
 print(xy)
 data = np.array(xy)
 
-# Apply fuzzy c-means clustering
+# Применение нечеткой кластеризации, используя метод С-средних, к нашим данным с помощью библиотеки skfuzzy
 cntr, u, u0, d, jm, p, fpc = fuzz.cluster.cmeans(
     data.T,
     n_clusters,
