@@ -5,9 +5,6 @@ from skfuzzy import control as ctrl
 import numpy as np
 
 # 3 кластера для разделения женщин по росту и возрасту
-# 1: низкие - 150 и ниже
-# 2: средние - 151 - 168
-# 3: высокие - 169+
 n = 10
 n_clusters = 3
 error = 0.05
