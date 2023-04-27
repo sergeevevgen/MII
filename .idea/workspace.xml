@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="100%">
-      <change afterPath="$PROJECT_DIR$/fuzzy_logic_inference.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fuzzy_clusters.py" beforeDir="false" afterPath="$PROJECT_DIR$/fuzzy_clusters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fuzzy_logic_inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/fuzzy_logic_inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +49,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.geneticalg">
+  <component name="RunManager">
     <configuration name="geneticalg" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MII" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -198,5 +197,16 @@
     <MESSAGE value="а" />
     <MESSAGE value="100%" />
     <option name="LAST_COMMIT_MESSAGE" value="100%" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fuzzy_logic_inference.py</url>
+          <line>63</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
