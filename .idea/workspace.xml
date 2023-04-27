@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="100%">
+    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="а">
+      <change afterPath="$PROJECT_DIR$/text_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fuzzy_logic_inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/fuzzy_logic_inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="branch_10(linguistic_variables)" />
+        <entry key="$PROJECT_DIR$" value="branch_12(fuzzy_logic_output)" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -178,7 +178,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680596646915</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="а">
+      <created>1682604117765</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1682604117765</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -194,19 +201,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="done" />
-    <MESSAGE value="а" />
     <MESSAGE value="100%" />
-    <option name="LAST_COMMIT_MESSAGE" value="100%" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fuzzy_logic_inference.py</url>
-          <line>63</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="а" />
+    <option name="LAST_COMMIT_MESSAGE" value="а" />
   </component>
 </project>
