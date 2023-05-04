@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="а">
-      <change afterPath="$PROJECT_DIR$/text.txt" afterDir="false" />
+    <list default="true" id="996ee079-0290-4e90-9d30-f8fb8f426a09" name="Changes" comment="done 100%">
+      <change afterPath="$PROJECT_DIR$/neural_network.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/text_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/text_analysis.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="branch_12(fuzzy_logic_output)" />
+        <entry key="$PROJECT_DIR$" value="branch_13(text_analysis)" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -193,7 +192,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682606698125</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="done 100%">
+      <created>1682635716356</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1682635716356</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -211,7 +217,8 @@
     <MESSAGE value="done" />
     <MESSAGE value="100%" />
     <MESSAGE value="а" />
-    <option name="LAST_COMMIT_MESSAGE" value="а" />
+    <MESSAGE value="done 100%" />
+    <option name="LAST_COMMIT_MESSAGE" value="done 100%" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
