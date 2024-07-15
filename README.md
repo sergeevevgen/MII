@@ -1,2 +1,2 @@
 # MII
-This is python studying project. I will study Machine-Learning here.
+This is python project. I will study Machine-Learning here.
